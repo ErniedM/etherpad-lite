@@ -19,35 +19,35 @@ pipeline {
         stage('Static Analysis') {
             steps {
                 // Voer statische code-analyse uit (bijv. ESLint)
-                // sh 'npm run lint'
+                sh 'echo "Running static analysis..."'
             }
         }
 
         stage('Security Scanning') {
             steps {
                 // Voer beveiligingsscans uit (bijv. OWASP Dependency-Check, container scanning)
-                // Voeg hier je beveiligingsscantaken toe
+                sh 'echo "Running security scans..."'
             }
         }
 
         stage('Testing') {
             steps {
                 // Voer tests uit (bijv. unit tests, functionele tests)
-                // Voeg hier je testtaken toe
+                sh 'echo "Running tests..."'
             }
         }
 
         stage('Deployment') {
             steps {
                 // Implementeer Etherpad in de gewenste omgeving (bijv. productie)
-                // Voeg hier je implementatiestappen toe
+                sh 'echo "Deploying Etherpad..."'
             }
         }
 
         stage('Notify') {
             steps {
                 // Stuur meldingen (bijv. e-mail) over het resultaat van de pipeline
-                // Voeg hier je meldingstaken toe
+                sh 'echo "Notifying..."'
             }
         }
     }
@@ -55,6 +55,7 @@ pipeline {
     post {
         failure {
             // Voer acties uit bij falen van de pipeline, bijvoorbeeld meldingen of blokkeren van verdere stappen
+            sh 'echo "Pipeline failed!"'
         }
     }
 }
