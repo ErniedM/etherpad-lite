@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Voer de buildstappen uit (bijv. installatie van afhankelijkheden, bouwen van Etherpad)
-                sh 'src/bin/run.sh'
+                sh 'docker compose build'
             }
         }
 
@@ -40,7 +40,9 @@ pipeline {
         stage('Deployment') {
             steps {
                 // Implementeer Etherpad in de gewenste omgeving (bijv. productie)
-                sh 'echo "Deploying Etherpad..."'
+                //sh 'echo "Deploying Etherpad..."'
+                sh 'docker compose up -d'
+               
             }
         }
 
