@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  etherpad:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: etherpad
+    environment:
+      - TIMEZONE=Europe/Amsterdam  # Vul hier je gewenste tijdzone in
+      - ETHERPAD_PLUGINS=ep_codepad ep_author_neat  # Voeg hier de gewenste Etherpad-plugins toe
+      - INSTALL_ABIWORD=true  # Schakel Abiword-installatie in als nodig
+      - INSTALL_SOFFICE=true  # Schakel LibreOffice-installatie in als nodig
+    ports:
+      - "9001:9001"
