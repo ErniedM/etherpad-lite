@@ -9,10 +9,15 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency-Check Vulnerabilities') {
+        stage('OWASP Dependency Check') {
             steps {
-               dependencyCheck additionalArguments: '--scan /home/s127280/Opdracht1/etherpad-lite', odcInstallation: 'owasp'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+              dependencyCheck additionalArguments: '--scan /home/s127280/Opdracht1/etherpad-lite/'' 
+                          -o './'
+                          -s './'
+                          -f 'ALL' 
+                          --prettyPrint''', odcInstallation: 'owasp'
+        
+              dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
 
