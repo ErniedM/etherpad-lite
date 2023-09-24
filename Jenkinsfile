@@ -9,16 +9,24 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency Check') {
-            steps {
-              dependencyCheck additionalArguments: ''' 
-                          --scan /home/s127280/Opdracht1/etherpad-lite/
-                          -o './'
-                          -s './'
-                          -f 'ALL' 
-                          --prettyPrint''', odcInstallation: 'owasp'
-        
-              dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+    stage('OWASP Dependency Check') {
+        steps {
+                script {
+                    def additionalArguments = '''\
+                        --scan /home/s127280/Opdracht1/etherpad-lite/
+                        -o ./
+                        -s ./
+                        -f ALL
+                        --prettyPrint
+                    '''
+
+                    dependencyCheck(
+                        additionalArguments: additionalArguments,
+                        odcInstallation: 'owasp'
+                    )
+                }
+
+                dependencyCheckPublisher(pattern: 'dependency-check-report.xml')
             }
         }
 
