@@ -23,10 +23,11 @@ pipeline {
             }
         }
 
-        stage('Security Scanning') {
+        stage('OWASP Dependency Check') {
             steps {
                 // Voer beveiligingsscans uit (bijv. OWASP Dependency-Check, container scanning)
-                sh 'echo "Running security scans..."'
+                dependencyCheck additionalArguments: '--scan /home/s127280/Opdracht1/etherpad-lite', odcInstallation: 'owasp'
+                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
 
