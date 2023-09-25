@@ -53,23 +53,6 @@ pipeline {
             }
         }
 
-        stage('Publish Trivy HTML Report') {
-            steps {
-                publishHTML(
-                    target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: false,
-                        reportDir: '.',
-                        reportFiles: 'trivy_report.html',
-                        reportName: 'Trivy Report',
-                        reportTitles:'',
-                        useWrapperFileDirectly:true
-                    ]
-                )
-            }
-        }        
-
         stage('Static Analysis') {
             steps {
                 // Voer statische code-analyse uit (bijv. ESLint)
@@ -112,6 +95,24 @@ pipeline {
         failure {
             // Voer acties uit bij falen van de pipeline, bijvoorbeeld meldingen of blokkeren van verdere stappen
             sh 'echo "Pipeline failed!"'
+        }
+        always {
+            stage('Publish Trivy HTML Report') {
+                steps {
+                    publishHTML(
+                        target: [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: false,
+                            reportDir: '.',
+                            reportFiles: 'trivy_report.html',
+                            reportName: 'Trivy Report',
+                            reportTitles:'',
+                            useWrapperFileDirectly:true
+                        ]
+                    )
+                }
+            }     
         }
     }
 }
