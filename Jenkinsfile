@@ -38,10 +38,8 @@ pipeline {
 
         stage('Trivy Scanning') {
             steps {
-                sh "trivy --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json secdevops-etherpad:latest"
-                // Generate an HTML report from the JSON using Trivy's built-in template
-                sh "trivy report -f template --template trivy-template.html -o trivy_report.html trivy_report.json"
-                archiveArtifacts artifacts: ['trivy_report.json', 'trivy_report.html'], allowEmptyArchive: true
+                sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
+                archiveArtifacts artifacts: 'trivy_report.html', allowEmptyArchive: true
             }
         }
         
@@ -97,8 +95,8 @@ pipeline {
                     reportDir: '.',
                     reportFiles: 'trivy_report.html',
                     reportName: 'Trivy Report',
-                    reportTitles:'',
-                    useWrapperFileDirectly:true
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
                 ]
             )
         }
