@@ -13,9 +13,8 @@ pipeline {
         steps {
                 script {
                     def additionalArguments = '''\
-                        --scan etherpad-lite/
-                        -o /var/lib/jenkins/workspace/SecDevOps/
-                        -s /var/lib/jenkins/workspace/SecDevOps/
+                        -o ./
+                        -s ./
                         -f ALL
                         --prettyPrint
                     '''
