@@ -38,16 +38,13 @@ pipeline {
 
         stage('Trivy Scanning') {
             steps {
-                script {
-                    def imageName = 'secdevops-etherpad:latest'
-                    sh "trivy --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json ${imageName}"
-                    // Generate an HTML report from the JSON using Trivy's built-in template
-                    sh "trivy report -f template --template trivy-template.html -o trivy_report.html trivy_report.json"
-                }
+                sh "trivy --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json secdevops-etherpad:latest"
+                // Generate an HTML report from the JSON using Trivy's built-in template
+                sh "trivy report -f template --template trivy-template.html -o trivy_report.html trivy_report.json"
                 archiveArtifacts artifacts: ['trivy_report.json', 'trivy_report.html'], allowEmptyArchive: true
             }
         }
-
+        
         stage('Static Analysis') {
             steps {
                 // Voer statische code-analyse uit (bijv. ESLint)
