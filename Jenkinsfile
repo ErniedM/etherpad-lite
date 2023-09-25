@@ -40,12 +40,7 @@ pipeline {
             steps {
                 script {
                     def imageName = 'secdevops-etherpad:latest'
-                    def trivyJSONReport = sh (
-                        script: "trivy --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json ${imageName}",
-                        returnStdout: true
-                    ).trim()
-                    writeFile file: 'trivy_report.json', text: trivyJSONReport
-            
+                    sh "trivy --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json ${imageName}"
                     // Generate an HTML report from the JSON using Trivy's built-in template
                     sh "trivy report -f template --template trivy-template.html -o trivy_report.html trivy_report.json"
                 }
