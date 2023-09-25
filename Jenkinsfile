@@ -41,7 +41,7 @@ pipeline {
                 script {
                     def imageName = 'secdevops-etherpad:latest'
                     def trivyJSONReport = sh (
-                        script: "trivy --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json ${imageName}",
+                        script: "trivy --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json ${imageName}",
                         returnStdout: true
                     ).trim()
                     writeFile file: 'trivy_report.json', text: trivyJSONReport
