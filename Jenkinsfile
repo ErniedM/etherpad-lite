@@ -97,22 +97,18 @@ pipeline {
             sh 'echo "Pipeline failed!"'
         }
         always {
-            stage('Publish Trivy HTML Report') {
-                steps {
-                    publishHTML(
-                        target: [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: false,
-                            reportDir: '.',
-                            reportFiles: 'trivy_report.html',
-                            reportName: 'Trivy Report',
-                            reportTitles:'',
-                            useWrapperFileDirectly:true
-                        ]
-                    )
-                }
-            }     
+            publishHTML(
+                target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: false,
+                    reportDir: '.',
+                    reportFiles: 'trivy_report.html',
+                    reportName: 'Trivy Report',
+                    reportTitles:'',
+                    useWrapperFileDirectly:true
+                ]
+            )
         }
-    }
+    }     
 }
