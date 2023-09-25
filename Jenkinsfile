@@ -36,6 +36,40 @@ pipeline {
             }
         }
 
+        stage('Trivy Scanning') {
+            steps {
+                script {
+                    def imageName = 'secdevops-etherpad:latest'
+                    def trivyJSONReport = sh (
+                        script: "trivy --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format json -o trivy_report.json ${imageName}",
+                        returnStdout: true
+                    ).trim()
+                    writeFile file: 'trivy_report.json', text: trivyJSONReport
+            
+                    // Generate an HTML report from the JSON using Trivy's built-in template
+                    sh "trivy report -f template --template trivy-template.html -o trivy_report.html trivy_report.json"
+                }
+                archiveArtifacts artifacts: ['trivy_report.json', 'trivy_report.html'], allowEmptyArchive: true
+            }
+        }
+
+        stage('Publish Trivy HTML Report') {
+            steps {
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false,
+                        reportDir: '.',
+                        reportFiles: 'trivy_report.html',
+                        reportName: 'Trivy Report',
+                        reportTitles:'',
+                        useWrapperFileDirectly:true
+                    ]
+                )
+            }
+        }        
+
         stage('Static Analysis') {
             steps {
                 // Voer statische code-analyse uit (bijv. ESLint)
