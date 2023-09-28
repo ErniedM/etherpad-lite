@@ -35,7 +35,7 @@ pipeline {
                 sh 'rm trufflehog_results.html || true'
                 sh 'docker run -v "/home/s127280/Opdracht1/etherpad-lite:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
                 sh './convert_json_to_html.sh'
-                archiveArtifacts artifacts: 'trufflehog_report.html', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
             }
         }
     
