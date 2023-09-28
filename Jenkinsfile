@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            // Specify the Docker image
-            image 'trufflesecurity/trufflehog:latest'
-            args '-v /home/s127280/Opdracht1/etherpad-lite:/pwd --entrypoint=""'
-        }
-    }
+    agent any
 
         stages {
             stage('Checkout') {
@@ -35,15 +29,42 @@ pipeline {
                 }
             }
 
-        stage ('Trufflehog Check') {
+        stage('Start Trufflehog Container') {
             steps {
-                sh 'rm trufflehog_results.json || true'
-                sh 'rm trufflehog_results.html || true'
-                sh 'trufflehog filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
-                sh './convert_json_to_html.sh'
-                archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
+                script {
+                    // Start the Docker container and capture the container ID
+                    def dockerImage = docker.image('trufflesecurity/trufflehog:latest')
+                    def container = dockerImage.run("-v /home/s127280/Opdracht1/etherpad-lite:/pwd", "--json")
+                    def containerId = container.id
+
+                    // Store the container ID in an environment variable for later use
+                    env.CONTAINER_ID = containerId
+                }
             }
         }
+
+        stage('Trufflehog Check') {
+            steps {
+                script {
+                    // Use the stored container ID to run the scan inside the container
+                    sh 'rm trufflehog_results.json || true'
+                    sh 'rm trufflehog_results.html || true'
+                    sh 'docker exec ${env.CONTAINER_ID} trufflehog filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
+                    sh './convert_json_to_html.sh'
+                    archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
+                }
+            }
+        }
+
+        //stage ('Trufflehog Check') {
+        //    steps {
+        //        sh 'rm trufflehog_results.json || true'
+        //        sh 'rm trufflehog_results.html || true'
+        //        sh 'trufflehog filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
+        //        sh './convert_json_to_html.sh'
+        //        archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
+        //    }
+        //}
     
         stage('Build') {
             steps {
