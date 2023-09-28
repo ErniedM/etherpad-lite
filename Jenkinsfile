@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            // Specify the Docker image
+            image 'trufflesecurity/trufflehog:latest'
+            args '-v /home/s127280/Opdracht1/etherpad-lite:/pwd'
+        }
+    }
 
         stages {
             stage('Checkout') {
@@ -33,7 +39,7 @@ pipeline {
             steps {
                 sh 'rm trufflehog_results.json || true'
                 sh 'rm trufflehog_results.html || true'
-                sh 'docker run -v "/home/s127280/Opdracht1/etherpad-lite:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
+                sh 'trufflehog filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
                 sh './convert_json_to_html.sh'
                 archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
             }
