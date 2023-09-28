@@ -1,34 +1,44 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                // Haal de broncode op uit de Git-repository
-                checkout scm
-            }
-        }
-
-    stage('OWASP Dependency Check') {
-        steps {
-                script {
-                    def additionalArguments = '''\
-                        -o ./
-                        -s ./
-                        -f ALL
-                        --prettyPrint
-                    '''
-
-                    dependencyCheck(
-                        additionalArguments: additionalArguments,
-                        odcInstallation: 'owasp'
-                    )
+        stages {
+            stage('Checkout') {
+                steps {
+                    // Haal de broncode op uit de Git-repository
+                    checkout scm
                 }
+            }
 
-                dependencyCheckPublisher(pattern: 'dependency-check-report.xml')
+        stage('OWASP Dependency Check') {
+            steps {
+                    script {
+                        def additionalArguments = '''\
+                            -o ./
+                            -s ./
+                            -f ALL
+                            --prettyPrint
+                        '''
+
+                        dependencyCheck(
+                            additionalArguments: additionalArguments,
+                            odcInstallation: 'owasp'
+                        )
+                    }
+
+                    dependencyCheckPublisher(pattern: 'dependency-check-report.xml')
+                }
+            }
+
+        stage ('Trufflehog Check') {
+            steps {
+                sh 'rm trufflehog_results.json || true'
+                sh 'rm trufflehog_results.html || true'
+                sh 'docker run --rm -it -v "/home/s127280/Opdracht1/etherpad-lite:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
+                sh './convert_json_to_html.sh'
+                archiveArtifacts artifacts: 'trivy_report.html', allowEmptyArchive: true
             }
         }
-
+    
         stage('Build') {
             steps {
                 // Voer de buildstappen uit (bijv. installatie van afhankelijkheden, bouwen van Etherpad)
@@ -95,6 +105,19 @@ pipeline {
                     reportDir: '.',
                     reportFiles: 'trivy_report.html',
                     reportName: 'Trivy Report',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ]
+            )
+            
+            publishHTML(
+                target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: false,
+                    reportDir: '.',
+                    reportFiles: 'trufflehog_results.html',
+                    reportName: 'Trufflehog Report',
                     reportTitles: '',
                     useWrapperFileDirectly: true
                 ]
