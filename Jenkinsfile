@@ -35,9 +35,12 @@ pipeline {
                     // Start the Docker container and capture the container ID
                     def dockerImage = docker.image('trufflesecurity/trufflehog:latest')
                     def container = dockerImage.run("-v /home/s127280/Opdracht1/etherpad-lite:/pwd", "--json")
-                    def containerId = container.id
+                    def fullContainerId = container.id
 
-                    // Store the container ID in an environment variable for later use
+                    // Extract the first 12 characters of the container ID
+                    def containerId = fullContainerId.take(12)
+
+                    // Store the first 12 characters of the container ID in an environment variable for later use
                     env.CONTAINER_ID = containerId
                 }
             }
