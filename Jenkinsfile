@@ -3,7 +3,7 @@ pipeline {
         docker {
             // Specify the Docker image
             image 'trufflesecurity/trufflehog:latest'
-            args '-v /home/s127280/Opdracht1/etherpad-lite:/pwd'
+            args '-v /home/s127280/Opdracht1/etherpad-lite:/pwd --entrypoint=""'
         }
     }
 
