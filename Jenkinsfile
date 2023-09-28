@@ -49,7 +49,7 @@ pipeline {
                     // Use the stored container ID to run the scan inside the container
                     sh 'rm trufflehog_results.json || true'
                     sh 'rm trufflehog_results.html || true'
-                    sh 'docker exec ${env.CONTAINER_ID} trufflehog filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
+                    sh "docker exec ${env.CONTAINER_ID} trufflehog filesystem /pwd --json 2>&1 | grep -v 'unable to read file for MIME type detection: EOF' > trufflehog_results.json"
                     sh './convert_json_to_html.sh'
                     archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
                 }
