@@ -12,8 +12,9 @@ pipeline {
         stage('ESLint Check') {
             steps {
                 script {
-                    sh 'npm install --save-dev eslint'
-                    sh 'eslint . --format checkstyle --output-file eslint.xml'
+                    sh 'rm -rf node_modules package-lock.json && npm install'
+                    sh 'npm run build'
+                    sh './node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
                 }
                 archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
             }
