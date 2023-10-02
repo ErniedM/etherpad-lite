@@ -9,6 +9,15 @@ pipeline {
                 }
             }
 
+        stage('ESLint Check') {
+            steps {
+                script {
+                    sh 'eslint . --format checkstyle --output-file eslint.xml'
+                }
+                archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
+            }
+        }
+
         stage('OWASP Dependency Check') {
             steps {
                     script {
@@ -123,6 +132,7 @@ pipeline {
                     useWrapperFileDirectly: true
                 ]
             )
+            publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
         }
     }     
 }

@@ -1,0 +1,32 @@
+{
+  "name": "etherpad-lite",
+  "version": "1.0.0",
+  "description": "![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif \"Etherpad in action\")",
+  "main": "make_docs.js",
+  "bin": {
+    "etherpad-lite": "bin/checkAllPads.js"
+  },
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "dependencies": {
+    "ep_etherpad-lite": "^1.9.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ErniedM/etherpad-lite.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ErniedM/etherpad-lite/issues"
+  },
+  "homepage": "https://github.com/ErniedM/etherpad-lite#readme"
+}
