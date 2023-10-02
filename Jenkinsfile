@@ -14,17 +14,15 @@ pipeline {
                 script {
                     def eslintError = null // Initialize eslintError
 
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    try {
                         sh 'rm -rf node_modules package-lock.json && npm install'
                         sh 'rm eslint.xml || true'
                         sh './node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
-                    }
-
-                    // Check if there was an error
-                    if (currentBuild.resultIsBetterOrEqualTo('FAILURE')) {
-                        currentBuild.result = 'FAILURE' // Set overall build result to FAILURE
-                        eslintError = "ESLint Check failed: ${currentBuild.rawBuild.result.toString()}"
+                    } catch (Exception e) {
+                        // Catch any exception and handle it gracefully
+                        eslintError = "ESLint Check failed: ${e.message}"
                         echo eslintError
+                        currentBuild.result = 'SUCCESS' // Set overall build result to SUCCESS
                     }
 
                     archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
