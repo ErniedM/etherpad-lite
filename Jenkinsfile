@@ -12,6 +12,7 @@ pipeline {
         stage('ESLint Check') {
             steps {
                 script {
+                    sh 'npm install --save-dev eslint'
                     sh 'eslint . --format checkstyle --output-file eslint.xml'
                 }
                 archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
