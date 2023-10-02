@@ -12,6 +12,7 @@ pipeline {
         stage('ESLint Check') {
             steps {
                 script {
+                    sh 'rm eslint.xml || true'
                     sh './node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
                 }
                 archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
