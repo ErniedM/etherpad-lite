@@ -13,8 +13,14 @@ pipeline {
             steps {
                 script {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        sh 'rm -rf node_modules package-lock.json && npm install'
                         sh 'rm eslint.xml || true'
                         sh './node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
+                    }
+                    // Check if there was an error
+                    if (eslintError != null) {
+                        currentBuild.result = 'FAILURE' // Set overall build result to FAILURE
+                        echo "ESLint Check failed: ${eslintError}"
                     }
                     archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
                 }
@@ -135,7 +141,8 @@ pipeline {
                     useWrapperFileDirectly: true
                 ]
             )
-            publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
+            // publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
+            recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
         }
     }     
 }
