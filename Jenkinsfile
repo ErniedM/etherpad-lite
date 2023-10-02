@@ -12,7 +12,7 @@ pipeline {
         stage('ESLint Check') {
             steps {
                 script {
-                    sh 'eslint . --format checkstyle --output-file eslint.xml'
+                    sh '/usr/local/lib/node_modules/eslint . --format checkstyle --output-file eslint.xml'
                 }
                 archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
             }
