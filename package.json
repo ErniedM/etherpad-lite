@@ -11,7 +11,7 @@
     "test": "tests"
   },
   "dependencies": {
-    "ep_etherpad-lite": "^1.9.3"
+    "ep_etherpad-lite": "^1.8.14"
   },
   "devDependencies": {
     "eslint": "^8.50.0"
