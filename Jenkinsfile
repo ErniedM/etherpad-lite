@@ -111,13 +111,13 @@ pipeline {
     //         }
     //     }
 
-    //     stage('Notify') {
-    //         steps {
-    //             // Stuur meldingen (bijv. e-mail) over het resultaat van de pipeline
-    //             sh 'echo "Notifying..."'
-    //         }
-    //     }
-    // }
+        // stage('Notify') {
+        //     steps {
+        //         // Stuur meldingen (bijv. e-mail) over het resultaat van de pipeline
+        //         sh 'echo "Notifying..."'
+        //     }
+        // }
+    }
 
     // post {
     //     failure {
