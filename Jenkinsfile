@@ -96,6 +96,18 @@ pipeline {
                 sh 'docker push ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
             }
         }
+
+        stage ('Notation Login') {
+            steps {
+                sh 'echo $GITHUB_TOKEN_PSW | notation login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
+            }
+        }
+
+        stage ('Image Signing') {
+            steps {
+                sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+            }
+        }
         // stage('Trivy Check') {
         //     steps {
         //         sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
