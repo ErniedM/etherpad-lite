@@ -105,7 +105,7 @@ pipeline {
 
         stage ('Image Signing') {
             steps {
-                sh 'notation cert generate-test --default "etherpad.org"'
+                sh 'if [ ! -f /var/lib/jenkins/.config/notation/localkeys/etherpad.org.key ]; then notation cert generate-test --default "etherpad.org"; fi'
                 sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
             }
         }
