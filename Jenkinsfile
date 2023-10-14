@@ -106,7 +106,17 @@ pipeline {
         stage ('Image Signing') {
             steps {
                 sh 'if [ ! -f /var/lib/jenkins/.config/notation/localkeys/etherpad.org.key ]; then notation cert generate-test --default "etherpad.org"; fi'
-                sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+                // sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+                def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStatus: true).trim()
+
+                // Sla de ondertekende afbeeldingstag op in een omgevingsvariabele
+                env.SIGNED_IMAGE = signedImage
+            }
+        }
+
+        stage ('Image Verification') {
+            steps {
+                sh 'notation verify $SIGNED_IMAGE'
             }
         }
         // stage('Trivy Check') {
