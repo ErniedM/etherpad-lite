@@ -109,8 +109,15 @@ pipeline {
                 // sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
                 script {
                     def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStdout: true).trim()
-                    // Save the signed image tag in an environment variable.
-                    env.SIGNED_IMAGE = signedImage
+                    // Extract the image tag from the signedImage string
+                    def indexOfAt = signedImage.lastIndexOf('@')
+                    if (indexOfAt >= 0) {
+                        // Save the signed image tag in an environment variable.
+                        env.SIGNED_IMAGE = signedImage.substring(indexOfAt + 1)
+                    } else {
+                        currentBuild.result = 'FAILURE'
+                        error("Invalid signed image format: $signedImage")
+                    }                                    
                 }        
             }
         }
