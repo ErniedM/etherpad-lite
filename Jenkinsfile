@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        GITHUB_TOKEN=credentials('github-token')
+    }
 
         stages {
             stage('Checkout') {
@@ -74,6 +77,11 @@ pipeline {
             }
         }
 
+        stage('Login to GHCR') {
+            steps {
+                sh 'echo $GITHUB_TOKEN_PSW | docker login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
+            }
+        }
         // stage('Trivy Check') {
         //     steps {
         //         sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
