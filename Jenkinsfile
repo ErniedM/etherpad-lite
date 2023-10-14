@@ -105,6 +105,7 @@ pipeline {
 
         stage ('Image Signing') {
             steps {
+                sh 'notation cert generate-test --default "etherpad.org"'
                 sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
             }
         }
@@ -159,6 +160,7 @@ pipeline {
         //     sh 'echo "Pipeline failed!"'
         // }
         always {
+            sh 'notation logout'
             sh 'docker logout'
             // publishHTML(
             //     target: [
