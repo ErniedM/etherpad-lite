@@ -109,6 +109,7 @@ pipeline {
                 // sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
                 script {
                     def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStdout: true).trim()
+                    echo signedImage
                     // Extract the image tag from the signedImage string
                     def indexOfAt = signedImage.lastIndexOf('@')
                     if (indexOfAt >= 0) {
