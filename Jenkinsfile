@@ -117,6 +117,7 @@ pipeline {
 
         stage ('Image Verification') {
             steps {
+                sh 'notation policy import ./trustpolicy.json'
                 sh 'notation verify $SIGNED_IMAGE'
             }
         }
