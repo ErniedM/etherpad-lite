@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         GITHUB_TOKEN=credentials('github-token')
+        IMAGE_NAME='erniedm/etherpad-lite'
+        IMAGE_VERSION='latest'
     }
 
         stages {
@@ -82,6 +84,18 @@ pipeline {
                 sh 'echo $GITHUB_TOKEN_PSW | docker login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
             }
         }
+
+        stage ('Tag Image') {
+            steps {
+                sh 'docker tag $IMAGE_NAME:$IMAGE_VERSION ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+            }
+        }
+
+        stage ('Push Image') {
+            steps {
+                sh 'docker push ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+            }
+        }
         // stage('Trivy Check') {
         //     steps {
         //         sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
@@ -127,39 +141,40 @@ pipeline {
         // }
     }
 
-    // post {
-    //     failure {
-    //         // Voer acties uit bij falen van de pipeline, bijvoorbeeld meldingen of blokkeren van verdere stappen
-    //         sh 'echo "Pipeline failed!"'
-    //     }
-    //     always {
-    //         publishHTML(
-    //             target: [
-    //                 allowMissing: false,
-    //                 alwaysLinkToLastBuild: false,
-    //                 keepAll: false,
-    //                 reportDir: '.',
-    //                 reportFiles: 'trivy_report.html',
-    //                 reportName: 'Trivy Report',
-    //                 reportTitles: '',
-    //                 useWrapperFileDirectly: true
-    //             ]
-    //         )
+    post {
+        // failure {
+        //     // Voer acties uit bij falen van de pipeline, bijvoorbeeld meldingen of blokkeren van verdere stappen
+        //     sh 'echo "Pipeline failed!"'
+        // }
+        always {
+            sh 'docker logout'
+            // publishHTML(
+            //     target: [
+            //         allowMissing: false,
+            //         alwaysLinkToLastBuild: false,
+            //         keepAll: false,
+            //         reportDir: '.',
+            //         reportFiles: 'trivy_report.html',
+            //         reportName: 'Trivy Report',
+            //         reportTitles: '',
+            //         useWrapperFileDirectly: true
+            //     ]
+            // )
             
-    //         publishHTML(
-    //             target: [
-    //                 allowMissing: false,
-    //                 alwaysLinkToLastBuild: false,
-    //                 keepAll: false,
-    //                 reportDir: '.',
-    //                 reportFiles: 'trufflehog_results.html',
-    //                 reportName: 'Trufflehog Report',
-    //                 reportTitles: '',
-    //                 useWrapperFileDirectly: true
-    //             ]
-    //         )
-    //         // publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
-    //         recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
-    //     }
-    // }     
+            // publishHTML(
+            //     target: [
+            //         allowMissing: false,
+            //         alwaysLinkToLastBuild: false,
+            //         keepAll: false,
+            //         reportDir: '.',
+            //         reportFiles: 'trufflehog_results.html',
+            //         reportName: 'Trufflehog Report',
+            //         reportTitles: '',
+            //         useWrapperFileDirectly: true
+            //     ]
+            // )
+            // // publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
+            // recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
+        }
+    }     
 }
