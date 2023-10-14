@@ -160,7 +160,6 @@ pipeline {
         //     sh 'echo "Pipeline failed!"'
         // }
         always {
-            sh 'notation logout'
             sh 'docker logout'
             // publishHTML(
             //     target: [
