@@ -13,3 +13,4 @@ services:
       - INSTALL_SOFFICE=true  # Schakel LibreOffice-installatie in als nodig
     ports:
       - "9001:9001"
+    image: ErniedM/etherpad-lite:latest
