@@ -113,7 +113,7 @@ pipeline {
                     def indexOfAt = signedImage.lastIndexOf('@')
                     if (indexOfAt >= 0) {
                         // Save the signed image tag in an environment variable.
-                        env.SIGNED_IMAGE = 'ghcr.io/${IMAGE_NAME}:${IMAGE_VERSION}' + signedImage.substring(indexOfAt)
+                        env.SIGNED_IMAGE = 'ghcr.io/' + IMAGE_NAME + ':' + IMAGE_VERSION + signedImage.substring(indexOfAt)
                     } else {
                         currentBuild.result = 'FAILURE'
                         error("Invalid signed image format: $signedImage")
