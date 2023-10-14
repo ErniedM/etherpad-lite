@@ -2,7 +2,7 @@
     "version": "1.0",
     "trustPolicies": [
         {
-            "name": "wabbit-networks-images",
+            "name": "etherpad-image",
             "registryScopes": [ "*" ],
             "signatureVerification": {
                 "level" : "strict"
