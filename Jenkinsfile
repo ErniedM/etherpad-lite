@@ -108,7 +108,7 @@ pipeline {
                 sh 'if [ ! -f /var/lib/jenkins/.config/notation/localkeys/etherpad.org.key ]; then notation cert generate-test --default "etherpad.org"; fi'
                 // sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
                 script {
-                    def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStatus: true).trim()
+                    def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStdout: true).trim()
                     // Save the signed image tag in an environment variable.
                     env.SIGNED_IMAGE = signedImage
                 }        
