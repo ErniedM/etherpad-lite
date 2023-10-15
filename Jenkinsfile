@@ -41,36 +41,36 @@ pipeline {
             }
         }
 
-        // stage('OWASP Dependency Check') {
-        //     steps {
-        //             script {
-        //                 def additionalArguments = '''\
-        //                     -o ./
-        //                     -s ./
-        //                     -f ALL
-        //                     --prettyPrint
-        //                 '''
+        stage('OWASP Dependency Check') {
+            steps {
+                    script {
+                        def additionalArguments = '''\
+                            -o ./
+                            -s ./
+                            -f ALL
+                            --prettyPrint
+                        '''
 
-        //                 dependencyCheck(
-        //                     additionalArguments: additionalArguments,
-        //                     odcInstallation: 'owasp'
-        //                 )
-        //             }
+                        dependencyCheck(
+                            additionalArguments: additionalArguments,
+                            odcInstallation: 'owasp'
+                        )
+                    }
 
-        //             dependencyCheckPublisher(pattern: 'dependency-check-report.xml')
-        //         }
-        //     }
+                    dependencyCheckPublisher(pattern: 'dependency-check-report.xml')
+                }
+            }
 
-        // stage ('Trufflehog Check') {
-        //     steps {
-        //         sh 'docker pull trufflesecurity/trufflehog:latest'
-        //         sh 'rm trufflehog_results.json || true'
-        //         sh 'rm trufflehog_results.html || true'
-        //         sh 'docker run -v "/home/s127280/Opdracht1/etherpad-lite:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
-        //         sh './convert_json_to_html.sh'
-        //         archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
-        //     }
-        // }
+        stage ('Trufflehog Check') {
+            steps {
+                sh 'docker pull trufflesecurity/trufflehog:latest'
+                sh 'rm trufflehog_results.json || true'
+                sh 'rm trufflehog_results.html || true'
+                sh 'docker run -v "/home/s127280/Opdracht1/etherpad-lite:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --json 2>&1 | grep -v "unable to read file for MIME type detection: EOF" > trufflehog_results.json'
+                sh './convert_json_to_html.sh'
+                archiveArtifacts artifacts: 'trufflehog_results.html', allowEmptyArchive: true
+            }
+        }
     
         stage('Build') {
             steps {
@@ -129,84 +129,45 @@ pipeline {
                 sh 'notation verify $SIGNED_IMAGE'
             }
         }
-        // stage('Trivy Check') {
-        //     steps {
-        //         sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
-        //         archiveArtifacts artifacts: 'trivy_report.html', allowEmptyArchive: true
-        //     }
-        // }
-        
-        // stage('Static Analysis') {
-        //     steps {
-        //         // Voer statische code-analyse uit (bijv. ESLint)
-        //         sh 'echo "Running static analysis..."'
-        //     }
-        // }
-
-    //     stage('Security Scanning') {
-    //         steps {
-    //             // Voer beveiligingsscans uit (bijv. OWASP Dependency-Check, container scanning)
-    //             sh 'echo "Running security scans..."'
-    //         }
-    //     }
-
-    //     stage('Testing') {
-    //         steps {
-    //             // Voer tests uit (bijv. unit tests, functionele tests)
-    //             sh 'echo "Running tests..."'
-    //         }
-    //     }
-
-    //     stage('Deployment') {
-    //         steps {
-    //             // Implementeer Etherpad in de gewenste omgeving (bijv. productie)
-    //             //sh 'echo "Deploying Etherpad..."'
-    //             sh 'docker compose up -d'
-               
-    //         }
-    //     }
-
-        // stage('Notify') {
-        //     steps {
-        //         // Stuur meldingen (bijv. e-mail) over het resultaat van de pipeline
-        //         sh 'echo "Notifying..."'
-        //     }
-        // }
+        stage('Trivy Check') {
+            steps {
+                sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
+                archiveArtifacts artifacts: 'trivy_report.html', allowEmptyArchive: true
+            }
+        }
     }
 
     post {
-        // failure {
-        //     // Voer acties uit bij falen van de pipeline, bijvoorbeeld meldingen of blokkeren van verdere stappen
-        //     sh 'echo "Pipeline failed!"'
-        // }
+        failure {
+            sh 'echo "Pipeline failed!"'
+        }
         always {
             sh 'docker logout'
-            // publishHTML(
-            //     target: [
-            //         allowMissing: false,
-            //         alwaysLinkToLastBuild: false,
-            //         keepAll: false,
-            //         reportDir: '.',
-            //         reportFiles: 'trivy_report.html',
-            //         reportName: 'Trivy Report',
-            //         reportTitles: '',
-            //         useWrapperFileDirectly: true
-            //     ]
-            // )
+            publishHTML(
+                target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: false,
+                    reportDir: '.',
+                    reportFiles: 'trivy_report.html',
+                    reportName: 'Trivy Report',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ]
+            )
             
-            // publishHTML(
-            //     target: [
-            //         allowMissing: false,
-            //         alwaysLinkToLastBuild: false,
-            //         keepAll: false,
-            //         reportDir: '.',
-            //         reportFiles: 'trufflehog_results.html',
-            //         reportName: 'Trufflehog Report',
-            //         reportTitles: '',
-            //         useWrapperFileDirectly: true
-            //     ]
-            // )
-            // publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
+            publishHTML(
+                target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: false,
+                    reportDir: '.',
+                    reportFiles: 'trufflehog_results.html',
+                    reportName: 'Trufflehog Report',
+                    reportTitles: '',
+                    useWrapperFileDirectly: true
+                ]
+            )
             recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
         }
     }     
