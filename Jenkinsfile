@@ -206,8 +206,8 @@ pipeline {
             //         useWrapperFileDirectly: true
             //     ]
             // )
-            // // publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
-            // recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
+            // publishCheckstyle(pattern: 'eslint.xml', unstableTotalAll: '10', healthyTotalAll: '5')
+            recordIssues enabledForFailure: true, aggregatingResults: true, tool: checkStyle(pattern: 'eslint.xml')
         }
     }     
 }
