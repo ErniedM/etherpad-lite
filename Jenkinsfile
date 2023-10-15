@@ -79,56 +79,56 @@ pipeline {
             }
         }
 
-        stage('Login to GHCR') {
-            steps {
-                sh 'echo $GITHUB_TOKEN_PSW | docker login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
-            }
-        }
+        // stage('Login to GHCR') {
+        //     steps {
+        //         sh 'echo $GITHUB_TOKEN_PSW | docker login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
+        //     }
+        // }
 
-        stage ('Tag Image') {
-            steps {
-                sh 'docker tag $IMAGE_NAME:$IMAGE_VERSION ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
-            }
-        }
+        // stage ('Tag Image') {
+        //     steps {
+        //         sh 'docker tag $IMAGE_NAME:$IMAGE_VERSION ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+        //     }
+        // }
 
-        stage ('Push Image') {
-            steps {
-                sh 'docker push ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
-            }
-        }
+        // stage ('Push Image') {
+        //     steps {
+        //         sh 'docker push ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+        //     }
+        // }
 
-        stage ('Notation Login') {
-            steps {
-                sh 'echo $GITHUB_TOKEN_PSW | notation login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
-            }
-        }
+        // stage ('Notation Login') {
+        //     steps {
+        //         sh 'echo $GITHUB_TOKEN_PSW | notation login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
+        //     }
+        // }
 
-        stage ('Image Signing') {
-            steps {
-                sh 'if [ ! -f /var/lib/jenkins/.config/notation/localkeys/etherpad.org.key ]; then notation cert generate-test --default "etherpad.org"; fi'
-                // sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
-                script {
-                    def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStdout: true).trim()
-                    echo signedImage
-                    // Extract the image tag from the signedImage string
-                    def indexOfAt = signedImage.lastIndexOf('@')
-                    if (indexOfAt >= 0) {
-                        // Save the signed image tag in an environment variable.
-                        env.SIGNED_IMAGE = 'ghcr.io/' + IMAGE_NAME + ':' + IMAGE_VERSION + signedImage.substring(indexOfAt)
-                    } else {
-                        currentBuild.result = 'FAILURE'
-                        error("Invalid signed image format: $signedImage")
-                    }                                    
-                }        
-            }
-        }
+        // stage ('Image Signing') {
+        //     steps {
+        //         sh 'if [ ! -f /var/lib/jenkins/.config/notation/localkeys/etherpad.org.key ]; then notation cert generate-test --default "etherpad.org"; fi'
+        //         // sh 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION'
+        //         script {
+        //             def signedImage = sh(script: 'notation sign ghcr.io/$IMAGE_NAME:$IMAGE_VERSION', returnStdout: true).trim()
+        //             echo signedImage
+        //             // Extract the image tag from the signedImage string
+        //             def indexOfAt = signedImage.lastIndexOf('@')
+        //             if (indexOfAt >= 0) {
+        //                 // Save the signed image tag in an environment variable.
+        //                 env.SIGNED_IMAGE = 'ghcr.io/' + IMAGE_NAME + ':' + IMAGE_VERSION + signedImage.substring(indexOfAt)
+        //             } else {
+        //                 currentBuild.result = 'FAILURE'
+        //                 error("Invalid signed image format: $signedImage")
+        //             }                                    
+        //         }        
+        //     }
+        // }
 
-        stage ('Image Verification') {
-            steps {
-                sh 'notation policy import ./trustpolicy.json'
-                sh 'notation verify $SIGNED_IMAGE'
-            }
-        }
+        // stage ('Image Verification') {
+        //     steps {
+        //         sh 'notation policy import ./trustpolicy.json'
+        //         sh 'notation verify $SIGNED_IMAGE'
+        //     }
+        // }
         stage('Trivy Check') {
             steps {
                 sh "trivy image --no-progress --exit-code 0 --severity MEDIUM,HIGH,CRITICAL --format template --template '@/usr/local/share/trivy/templates/html.tpl' -o trivy_report.html secdevops-etherpad:latest"
