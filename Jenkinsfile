@@ -20,26 +20,26 @@ pipeline {
             }
         }
 
-        // stage('ESLint Check') {
-        //     steps {
-        //         script {
-        //             def eslintError = null // Initialize eslintError
+        stage('ESLint Check') {
+            steps {
+                script {
+                    def eslintError = null // Initialize eslintError
 
-        //             try {
-        //                 sh 'rm -rf node_modules package-lock.json && npm install'
-        //                 sh 'rm eslint.xml || true'
-        //                 sh './node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
-        //             } catch (Exception e) {
-        //                 // Catch any exception and handle it gracefully
-        //                 eslintError = "ESLint Check failed: ${e.message}"
-        //                 echo eslintError
-        //                 currentBuild.result = 'SUCCESS' // Set overall build result to SUCCESS
-        //             }
+                    try {
+                        sh 'rm -rf node_modules package-lock.json && npm install'
+                        sh 'rm eslint.xml || true'
+                        sh './node_modules/eslint/bin/eslint.js -f checkstyle src > eslint.xml'
+                    } catch (Exception e) {
+                        // Catch any exception and handle it gracefully
+                        eslintError = "ESLint Check failed: ${e.message}"
+                        echo eslintError
+                        currentBuild.result = 'SUCCESS' // Set overall build result to SUCCESS
+                    }
 
-        //             archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
-        //         }
-        //     }
-        // }
+                    archiveArtifacts artifacts: 'eslint.xml', allowEmptyArchive: true
+                }
+            }
+        }
 
         // stage('OWASP Dependency Check') {
         //     steps {
